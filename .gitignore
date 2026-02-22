@@ -1,0 +1,254 @@
+# ============================================
+# MANSA - .gitignore
+# Educational Platform Configuration
+# ============================================
+
+# ============================================
+# Dependencies & Packages
+# ============================================
+
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Package manager files (keep package.json and package-lock.json)
+.pnpm-store/
+.yarn/
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
+
+# ============================================
+# Environment & Secrets (CRITICAL!)
+# ============================================
+
+# Environment files - NEVER commit these
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc
+
+# API Keys & Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# ============================================
+# Build Outputs
+# ============================================
+
+# Vite
+dist/
+dist-ssr/
+.vite/
+
+# General build outputs
+build/
+out/
+*.local
+
+# Static site generators
+.cache/
+.temp/
+
+# ============================================
+# Development Tools
+# ============================================
+
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output/
+
+# Testing
+test-results/
+playwright-report/
+screenshots/
+videos/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# IDEs & Editors
+# ============================================
+
+# VS Code (keep settings for team, ignore workspace)
+.vscode/settings.local.json
+*.code-workspace
+
+# WebStorm / IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================
+# Operating Systems
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# ============================================
+# Temporary Files
+# ============================================
+
+# General temp
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+
+# ============================================
+# Project Specific
+# ============================================
+
+# User uploads (in production these go to cloud storage)
+uploads/
+user-data/
+
+# Generated files
+*.generated.*
+
+# Database dumps
+*.sql
+*.sqlite
+*.db
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Large media files (use Git LFS instead)
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.flv
+
+# ============================================
+# Security & Analysis
+# ============================================
+
+# Security scan results
+.snyk
+snyk-*.json
+
+# Dependency review
+.dependency-check/
+
+# ============================================
+# Misc
+# ============================================
+
+# Lock files (choose your package manager)
+# Uncomment the one you DON'T use:
+# yarn.lock
+# pnpm-lock.yaml
+
+# Documentation builds
+docs/_build/
+site/
+
+# Storybook
+storybook-static/
+
+# TypeScript (for future)
+*.tsbuildinfo
+
+# Optional npm cache
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Parcel cache (if using Parcel)
+.parcel-cache/
+
+# Next.js (if migrating to Next.js)
+.next/
+
+# Nuxt.js (if using Nuxt)
+.nuxt/
+
+# Gatsby (if using Gatsby)
+.cache/
+public/
+
+# SvelteKit (if using SvelteKit)
+.svelte-kit/
+
+# ============================================
+# Keep These
+# ============================================
+
+# Force include important config files
+!.gitignore
+!.gitattributes
+!.editorconfig
+!.nvmrc
