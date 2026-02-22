@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+# ─────────────────────────────────────────────────────────────────────────────
+# MANSA - Git Pre-Commit Hook
+# يعمل تلقائياً قبل كل commit | Runs automatically before every commit
+#
+# ما يفعله هذا الملف | What this does:
+#   1. يشغّل lint-staged على الملفات المُضافة للـ staging فقط
+#      Runs lint-staged on staged files only (not the whole project)
+#   2. lint-staged يشغّل ESLint + Prettier على هذه الملفات
+#      lint-staged runs ESLint + Prettier on those files
+#   3. إذا فشل ESLint → يُلغى الـ commit تلقائياً
+#      If ESLint fails → commit is automatically cancelled
+#
+# لتخطي هذا الـ hook في حالات الطوارئ | To skip in emergency:
+#   git commit --no-verify -m "your message"
+#   ⚠ استخدم هذا فقط في حالات الضرورة القصوى
+# ─────────────────────────────────────────────────────────────────────────────
+
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx lint-staged

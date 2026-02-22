@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+# MANSA - Git Commit-Message Hook
+# يتحقق من رسالة الـ commit | Validates commit message (Conventional Commits)
+#
+# الصيغة المطلوبة | Required format:
+#   <type>(<scope>): <description>
+#
+# الأنواع المقبولة | Accepted types:
+#   feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert
+#
+# أمثلة | Examples:
+#   feat(auth): add email verification
+#   fix(quiz): resolve timer not stopping on mobile
+#   chore(deps): upgrade firebase to v10.7.2
+#
+# للتخطي في الطوارئ | Skip in emergency: git commit --no-verify
+
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx --no -- commitlint --edit "$1"
