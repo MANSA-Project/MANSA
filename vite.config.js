@@ -3,10 +3,11 @@
  * https://vitejs.dev/config/
  */
 
-import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
-import { VitePWA } from 'vite-plugin-pwa';
+
 import legacy from '@vitejs/plugin-legacy';
+import { defineConfig, loadEnv } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
   // Load env file based on mode
@@ -143,14 +144,6 @@ export default defineConfig(({ mode }) => {
                 cacheableResponse: {
                   statuses: [0, 200],
                 },
-              },
-            },
-            {
-              urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'firebase-cache',
-                networkTimeoutSeconds: 10,
               },
             },
           ],
