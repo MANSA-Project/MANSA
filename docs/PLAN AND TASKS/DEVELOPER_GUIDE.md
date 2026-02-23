@@ -200,23 +200,92 @@ git push origin feature/your-task-name
 
 ### Build & Test
 
-| Command           | What it does                                 |
-| ----------------- | -------------------------------------------- |
-| `npm run build`   | Build production bundle → outputs to `dist/` |
-| `npm run preview` | Preview the production build locally         |
-| `npm run test`    | Run unit tests (Vitest)                      |
-| `npm run test:ui` | Run tests with visual Vitest UI              |
-| `npm run analyze` | Visualize bundle size breakdown              |
+| Command                              | What it does                                 |
+| ------------------------------------ | -------------------------------------------- |
+| `npm run build`                      | Build production bundle → outputs to `dist/` |
+| `npm run preview`                    | Preview the production build locally         |
+| `npm run test`                       | Run tests in watch mode (Vitest)             |
+| `npm run test -- --run`              | Run tests once and exit (for CI)             |
+| `npm run test -- --reporter=verbose` | Run tests with full output per test          |
+| `npm run test:ui`                    | Open Vitest visual UI in browser             |
+| `npm run test:coverage`              | Run tests with coverage report               |
+| `npm run analyze`                    | Visualize bundle size breakdown              |
 
-### Git Shortcuts (useful ones)
+### Security & Audit
 
-| Command                 | What it does                         |
-| ----------------------- | ------------------------------------ |
-| `git status`            | See what files are changed/staged    |
-| `git log --oneline -10` | See last 10 commits                  |
-| `git stash`             | Temporarily save uncommitted changes |
-| `git stash pop`         | Restore stashed changes              |
-| `git checkout -`        | Switch back to the previous branch   |
+| Command         | What it does                                     |
+| --------------- | ------------------------------------------------ |
+| `npm audit`     | Check for known vulnerabilities in dependencies  |
+| `npm audit fix` | Auto-fix safe vulnerabilities                    |
+| `npm outdated`  | List packages that have newer versions available |
+
+### Git — Status & Inspection
+
+| Command                           | What it does                                                 |
+| --------------------------------- | ------------------------------------------------------------ |
+| `git status`                      | Show staged, unstaged, and untracked files                   |
+| `git diff`                        | Show unstaged changes (what changed but not yet `git add`ed) |
+| `git diff --staged`               | Show staged changes (what will go into the next commit)      |
+| `git log --oneline -10`           | See last 10 commits (short)                                  |
+| `git log --oneline --graph --all` | Visual branch tree                                           |
+| `git show <commit>`               | See full diff of a specific commit                           |
+| `git blame <file>`                | See who last changed each line of a file                     |
+| `git remote -v`                   | Show remote URLs                                             |
+
+### Git — Branching
+
+| Command                                 | What it does                          |
+| --------------------------------------- | ------------------------------------- |
+| `git branch`                            | List local branches                   |
+| `git branch -a`                         | List all branches (local + remote)    |
+| `git checkout -b feature/name`          | Create and switch to a new branch     |
+| `git checkout -`                        | Switch back to the previous branch    |
+| `git branch -d feature/name`            | Delete a local branch (after merging) |
+| `git push origin --delete feature/name` | Delete remote branch                  |
+
+### Git — Staging & Committing
+
+| Command                            | What it does                                                 |
+| ---------------------------------- | ------------------------------------------------------------ |
+| `git add .`                        | Stage all changed files                                      |
+| `git add <file>`                   | Stage a specific file only                                   |
+| `git add -p`                       | Interactively stage chunks (review before staging)           |
+| `git restore --staged <file>`      | Unstage a file (keeps changes on disk)                       |
+| `git restore <file>`               | Discard unstaged changes to a file                           |
+| `git commit -m "type(scope): msg"` | Commit with message                                          |
+| `git commit --amend --no-edit`     | Add staged changes to the last commit (don't change message) |
+| `git commit --amend -m "new msg"`  | Fix last commit message (before push only)                   |
+
+### Git — Syncing
+
+| Command                           | What it does                             |
+| --------------------------------- | ---------------------------------------- |
+| `git fetch origin`                | Download remote changes without merging  |
+| `git pull origin develop`         | Pull latest develop into current branch  |
+| `git pull --rebase`               | Pull with rebase (keeps cleaner history) |
+| `git push origin feature/name`    | Push branch to remote                    |
+| `git push -u origin feature/name` | Push and set upstream (first push only)  |
+
+### Git — Fixing Mistakes
+
+| Command                    | What it does                                             |
+| -------------------------- | -------------------------------------------------------- |
+| `git reset HEAD~1`         | Undo last commit, keep changes staged                    |
+| `git reset --hard HEAD~1`  | Undo last commit AND discard changes (⚠️ destructive)    |
+| `git revert <commit>`      | Create a new commit that undoes a specific commit (safe) |
+| `git stash`                | Temporarily save uncommitted changes                     |
+| `git stash pop`            | Restore last stash                                       |
+| `git stash list`           | See all stashes                                          |
+| `git cherry-pick <commit>` | Apply a specific commit from another branch              |
+
+### Git — Releases
+
+| Command                                     | What it does                         |
+| ------------------------------------------- | ------------------------------------ |
+| `git tag v0.1.0`                            | Create a lightweight tag             |
+| `git tag -a v0.1.0 -m "V0.1 Alpha release"` | Create an annotated tag with message |
+| `git push origin v0.1.0`                    | Push a specific tag to remote        |
+| `git push origin --tags`                    | Push all tags to remote              |
 
 ---
 
@@ -269,11 +338,91 @@ wip
 
 - Never push directly to `main` or `develop`
 - Every PR must pass CI (lint + build) before merging
-- PR title should match your commit message style: `feat(scope): description`
 - At least one review before merging to `develop` (if team > 1 person)
-- Squash merge when merging feature branches (keeps history clean)
+- Squash merge for feature/fix/chore branches — keeps history clean
+- Merge commit for `develop → main` — preserves the full release history
 
----
+### Writing a Pull Request
+
+**Title** — same format as a commit message:
+
+```
+feat(router): add hash-based SPA routing
+fix(cache): resolve stale data after admin write
+chore(deps): upgrade firebase to v10.14.1
+```
+
+**Description** — use this template every time:
+
+```markdown
+## What this PR does
+
+<!-- One paragraph — what changed and why -->
+
+## Changes
+
+- feat(router): add hash-based SPA routing with param support
+- fix(router): handle unknown routes with 404 redirect
+- test(router): add 12 tests covering all route scenarios
+
+## How to test
+
+<!-- Steps a reviewer should follow to verify the change -->
+
+1. Start the dev server: `npm run dev`
+2. Navigate to `/#/university/123` — should render UniversityView
+3. Navigate to `/#/unknown` — should redirect to home
+
+## Screenshots (if UI changed)
+
+<!-- Paste before/after screenshots if the PR affects the UI -->
+
+## Checklist
+
+- [ ] `npm run lint` passes (0 errors)
+- [ ] `npm run test -- --run` passes
+- [ ] No `.env.*` files committed
+- [ ] No `console.log` left in code
+```
+
+### Opening a PR (step by step)
+
+```bash
+# 1. Make sure your branch is pushed
+git push origin feature/your-branch-name
+
+# 2. Go to GitHub → your repo → "Pull requests" → "New pull request"
+# 3. base: develop ← compare: feature/your-branch-name
+# 4. Fill in title + description using the template above
+# 5. Assign yourself as assignee
+# 6. Click "Create pull request"
+```
+
+### Merging a PR
+
+**Merging `feature/* → develop`:**
+
+- Use **Squash and merge** — all commits from the branch become one clean commit on develop
+- The commit message on GitHub should still match the format: `feat(scope): description`
+
+**Merging `develop → main` (release):**
+
+- Use **Create a merge commit** — preserves the full develop history
+- Tag the merge commit with a version: `git tag -a v0.1.0 -m "V0.1 Alpha"`
+
+### After your PR is merged
+
+```bash
+# Delete your local branch
+git branch -d feature/your-branch-name
+
+# Delete the remote branch (GitHub does this automatically if configured)
+git push origin --delete feature/your-branch-name
+
+# Switch back to develop and pull the merged changes
+git checkout develop
+git pull origin develop
+```
 
 ## 5. Commit Message Reference
 

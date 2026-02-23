@@ -112,7 +112,7 @@ export const REGEX = {
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 
   /** أرقام الهاتف المصرية — 010، 011، 012، 015 | Egyptian mobile numbers */
-  PHONE: /^01[0-2,5]\d{8}$/,
+  PHONE: /^01[0125]\d{8}$/,
 
   /** رابط مطلق (http أو https) | Absolute URL */
   URL: /^https?:\/\/.+/,
