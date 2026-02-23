@@ -41,10 +41,19 @@ export const ENV = {
   },
 
   // ─── مفاتيح الذكاء الاصطناعي | AI API Keys ───────────────────────────────
+  // ⚠️  SECURITY WARNING — DO NOT PUT REAL KEYS HERE YET
+  // Any VITE_ variable is inlined into the JS bundle at build time.
+  // Anyone can read it from DevTools → Sources.
+  //
+  // V1.0 fix: AI calls will go through a Firebase Cloud Function (server-side proxy).
+  // The browser will call the Cloud Function, which holds the real key securely.
+  // Until that proxy exists, these must remain empty in production builds.
+  //
+  // Safe to use in .env.development for local testing only.
   ai: {
-    /** Groq — يُستخدم للـ AI chat (llama-3.3-70b) */
+    /** Groq — يُستخدم للـ AI chat (llama-3.3-70b) — V1.0+ */
     groqApiKey: import.meta.env.VITE_GROQ_API_KEY,
-    /** Google Gemini — يُستخدم لتحليل الصور */
+    /** Google Gemini — يُستخدم لتحليل الصور — V1.0+ */
     geminiApiKey: import.meta.env.VITE_GEMINI_API_KEY,
   },
 
