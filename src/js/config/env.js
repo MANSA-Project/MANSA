@@ -57,6 +57,11 @@ export const ENV = {
   // true → يتصل بـ Firebase Emulator بدلاً من Firebase الحقيقي
   // true → connects to local Firebase Emulator instead of real Firebase
   useEmulator: import.meta.env.VITE_USE_EMULATOR === 'true',
+  emulator: {
+    host: import.meta.env.VITE_EMULATOR_HOST || '127.0.0.1',
+    firestorePort: parseInt(import.meta.env.VITE_FIRESTORE_EMULATOR_PORT, 10) || 8080,
+    authPort: parseInt(import.meta.env.VITE_AUTH_EMULATOR_PORT, 10) || 9099,
+  },
 
   // ─── مفاتيح تفعيل الميزات | Feature Flags ────────────────────────────────
   // يمكن تعطيل أي ميزة من ملف .env بدون تعديل الكود

@@ -35,10 +35,13 @@ export const auth = getAuth(app);
 if (ENV.useEmulator) {
   // تأكد من تشغيل: firebase emulators:start
   // Make sure to run: firebase emulators:start
-  connectFirestoreEmulator(db, '127.0.0.1', 8080);
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  const { host, firestorePort, authPort } = ENV.emulator;
+  connectFirestoreEmulator(db, host, firestorePort);
+  connectAuthEmulator(auth, `http://${host}:${authPort}`, { disableWarnings: true });
 
-  console.info('[MANSA] 🔧 Firebase Emulator connected — Firestore:8080 | Auth:9099');
+  console.info(
+    `[MANSA] 🔧 Firebase Emulator connected — Firestore:${firestorePort} | Auth:${authPort}`
+  );
 }
 
 export default app;
