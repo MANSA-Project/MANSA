@@ -1,0 +1,100 @@
+{
+  // ─────────────────────────────────────────────────────────────────────────
+  // MANSA - VSCode Workspace Settings
+  // إعدادات VSCode لمشروع MANSA — تُطبَّق على كل أعضاء الفريق
+  // Applied to all team members — commit this file to Git
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ─── التنسيق التلقائي | Auto Formatting ─────────────────────────────────
+  // Prettier يعمل تلقائياً عند كل حفظ — لا حاجة لتشغيله يدوياً
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false, // لا تنسيق تلقائي عند اللصق (قد يكسر الكود)
+  "editor.formatOnType":  false,
+
+  // Prettier هو المنسّق الافتراضي لجميع الملفات
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // إعدادات خاصة بكل نوع ملف | File-type specific formatters
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on" // تفعيل word wrap في Markdown
+  },
+
+  // ─── ESLint ───────────────────────────────────────────────────────────────
+  // تصحيح أخطاء ESLint تلقائياً عند الحفظ
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit", // إصلاح ESLint عند Cmd/Ctrl+S
+    "source.organizeImports": "never"   // لا ترتيب imports تلقائي (ESLint plugin يتولى ذلك)
+  },
+  "eslint.validate": ["javascript"],
+  "eslint.run": "onSave",
+
+  // ─── المحرر | Editor Quality of Life ────────────────────────────────────
+  "editor.tabSize":          2,    // 2 مسافات — متوافق مع .editorconfig
+  "editor.insertSpaces":     true,
+  "editor.detectIndentation":false, // لا تتغير الـ indent تلقائياً
+  "editor.rulers":           [100], // خط بصري عند 100 حرف (printWidth في Prettier)
+  "editor.wordWrap":         "off",
+  "editor.minimap.enabled":  true,
+  "editor.bracketPairColorization.enabled": true, // تلوين أزواج الأقواس
+  "editor.guides.bracketPairs": "active",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.inlineSuggest.enabled": true,     // GitHub Copilot / AI suggestions
+  "editor.linkedEditing": true,             // تحديث HTML tags المزدوجة تلقائياً
+
+  // ─── دعم العربية والـ RTL | Arabic & RTL Support ─────────────────────────
+  // مهم لمشروع ثنائي اللغة
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "editor.unicodeHighlight.invisibleCharacters": true,
+
+  // ─── استكشاف الملفات | File Explorer ────────────────────────────────────
+  "files.eol":                    "\n",   // LF — متوافق مع .gitattributes
+  "files.insertFinalNewline":     true,   // سطر فارغ في نهاية كل ملف
+  "files.trimTrailingWhitespace": true,   // حذف المسافات الزائدة في نهاية الأسطر
+  "files.trimFinalNewlines":      true,   // سطر واحد فقط في النهاية
+  "files.exclude": {
+    "node_modules": true,
+    "dist":         true,
+    ".vite":        true,
+    "coverage":     true,
+    ".lighthouseci":true
+  },
+  "search.exclude": {
+    "node_modules":     true,
+    "dist":             true,
+    "package-lock.json":true,
+    "coverage":         true
+  },
+
+  // ─── Git ──────────────────────────────────────────────────────────────────
+  "git.enableSmartCommit": true,
+  "git.autofetch":         true,
+  "git.confirmSync":       false,
+
+  // ─── Terminal ────────────────────────────────────────────────────────────
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.env.windows": {
+    "NODE_ENV": "development"
+  },
+
+  // ─── تمديدات | Extension Specific ────────────────────────────────────────
+  // تعطيل إعادة التنسيق من أي extension آخر لتجنب التعارض مع Prettier
+  "html.format.enable": false,
+  "css.validate":  true,
+  "json.validate.enable": true
+}

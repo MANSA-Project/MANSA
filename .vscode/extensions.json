@@ -1,0 +1,56 @@
+{
+  // ─────────────────────────────────────────────────────────────────────────
+  // MANSA - VSCode Recommended Extensions
+  // الإضافات الموصى بها لكل أعضاء الفريق
+  // VSCode will prompt users to install these when they open the project
+  // ─────────────────────────────────────────────────────────────────────────
+
+  "recommendations": [
+
+    // ─── جودة الكود | Code Quality ─────────────────────────────────────────
+    "esbenp.prettier-vscode",           // Prettier — التنسيق التلقائي
+    "dbaeumer.vscode-eslint",           // ESLint — تحليل الأخطاء المنطقية
+    "editorconfig.editorconfig",        // EditorConfig — توحيد إعدادات المحرر
+
+    // ─── Git ────────────────────────────────────────────────────────────────
+    "eamodio.gitlens",                  // GitLens — تاريخ Git داخل المحرر
+    "mhutchie.git-graph",               // Git Graph — عرض بصري لشجرة الـ branches
+    "github.vscode-pull-request-github",// GitHub PRs مباشرة من VSCode
+
+    // ─── JavaScript ─────────────────────────────────────────────────────────
+    "christian-kohler.path-intellisense",    // إكمال تلقائي لمسارات الملفات
+    "steoates.autoimport",                   // استيراد تلقائي للـ modules
+    "ms-vscode.vscode-js-profile-flame",     // تحليل أداء JavaScript
+
+    // ─── HTML / CSS ─────────────────────────────────────────────────────────
+    "ecmel.vscode-html-css",            // CSS class name completion in HTML
+    "pranaygp.vscode-css-peek",         // Peek CSS definitions from HTML
+    "formulahendry.auto-rename-tag",    // تغيير tag افتتاحي وختامي معاً
+    "formulahendry.auto-close-tag",     // إغلاق HTML tags تلقائياً
+
+    // ─── Firebase ───────────────────────────────────────────────────────────
+    "toba.vsfire",                      // Firebase Firestore rules highlighting
+
+    // ─── واجهة المستخدم | UI / DX ──────────────────────────────────────────
+    "pkief.material-icon-theme",        // أيقونات ملفات Material Design
+    "aaron-bond.better-comments",       // تلوين التعليقات (//!, //?, //TODO)
+    "streetsidesoftware.code-spell-checker", // تصحيح إملائي في الكود والتعليقات
+    "streetsidesoftware.code-spell-checker-arabic", // تصحيح إملائي عربي
+
+    // ─── الإنتاجية | Productivity ────────────────────────────────────────
+    "wayou.vscode-todo-highlight",      // تمييز بصري لـ TODO و FIXME
+    "gruntfuggly.todo-tree",            // عرض كل TODOs في شجرة منفصلة
+    "ms-vscode-remote.remote-wsl",      // WSL integration (Windows only)
+
+    // ─── PWA & Performance ──────────────────────────────────────────────────
+    "ms-vscode.live-server"             // Live preview للـ HTML
+  ],
+
+  // ─── إضافات غير موصى بها | Unwanted Extensions ──────────────────────────
+  // إضافات قد تتعارض مع إعدادات الفريق — سيتم تعطيلها للمشروع
+  "unwantedRecommendations": [
+    "hookyqr.beautify",                 // يتعارض مع Prettier
+    "HookyQR.beautify",                 // نفس الإضافة (أسماء مختلفة)
+    "ms-vscode.vscode-typescript-next"  // TypeScript next — غير مستخدم في المشروع
+  ]
+}
