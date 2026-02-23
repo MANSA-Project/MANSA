@@ -195,5 +195,12 @@ export default defineConfig(({ mode }) => {
 
     // Clear screen on rebuild (dev mode)
     clearScreen: true,
+
+    // ─── Vitest Configuration ─────────────────────────────────────────────
+    test: {
+      globals: true, // no need to import describe/it/expect in test files
+      environment: 'node', // regex/pure-JS tests don't need a DOM
+      include: ['tests/**/*.test.js'],
+    },
   };
 });
