@@ -1,0 +1,103 @@
+rules_version = '2';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MANSA — Firestore Security Rules
+// Version: V0.1 (public read-only, no client writes)
+//
+// V0.1 strategy:
+//   - All content collections: public read, no writes
+//   - Writes only happen via the Admin Panel → Firebase Emulator (local dev)
+//   - Production data is seeded manually through Firebase Console
+//
+// V0.5 upgrade plan:
+//   - users/{uid}: authenticated users can read/write their own doc
+//   - challenges/{id}: authenticated users can create their own results
+//   - leaderboard/{subjectId}/entries/{uid}: authenticated writes
+//   - posts/{id}: verified students can create, batch leaders can approve
+//   - Admin writes: require request.auth.token.admin == true
+// ─────────────────────────────────────────────────────────────────────────────
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper Functions ──────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    // ─── V0.1: Public Content (read-only) ─────────────────────────────────
+    // These collections are the browseable academic hierarchy.
+    // Public read is intentional — no login required to browse.
+    // All writes are blocked on the client side in V0.1.
+
+    match /universities/{docId} {
+      allow read: if true;
+      allow write: if false;
+      // V0.5: allow write: if isAdmin();
+    }
+
+    match /faculties/{docId} {
+      allow read: if true;
+      allow write: if false;
+      // V0.5: allow write: if isAdmin();
+    }
+
+    match /departments/{docId} {
+      allow read: if true;
+      allow write: if false;
+      // V0.5: allow write: if isAdmin();
+    }
+
+    match /subjects/{docId} {
+      allow read: if true;
+      allow write: if false;
+      // V0.5: allow write: if isAdmin();
+    }
+
+    // ─── V0.5+: User Data (not yet active) ────────────────────────────────
+    // Uncomment and expand these when auth is implemented in V0.5
+
+    // match /users/{userId} {
+    //   allow read: if isSignedIn();
+    //   allow create: if isSignedIn() && request.auth.uid == userId;
+    //   allow update: if isSignedIn() && request.auth.uid == userId;
+    //   allow delete: if false;
+    // }
+
+    // match /usernames/{username} {
+    //   allow read: if true;
+    //   allow write: if isSignedIn();
+    // }
+
+    // ─── V0.5+: Challenge & Leaderboard ───────────────────────────────────
+
+    // match /challenges/{challengeId} {
+    //   allow read: if isSignedIn();
+    //   allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    //   allow update, delete: if false;
+    // }
+
+    // match /leaderboard/{subjectId}/entries/{userId} {
+    //   allow read: if true;
+    //   allow write: if isSignedIn() && request.auth.uid == userId;
+    // }
+
+    // ─── V0.5+: Posts ─────────────────────────────────────────────────────
+
+    // match /posts/{postId} {
+    //   allow read: if true;
+    //   allow create: if isSignedIn();
+    //   allow update: if isAdmin();
+    //   allow delete: if false;
+    // }
+
+    // ─── Default: deny everything not explicitly matched ──────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
