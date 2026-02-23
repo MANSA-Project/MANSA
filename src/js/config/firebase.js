@@ -16,7 +16,7 @@
 
 import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence } from 'firebase/firestore';
 
 import { ENV } from './env.js';
 
@@ -39,6 +39,20 @@ if (ENV.useEmulator) {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
 
   console.info('[MANSA] 🔧 Firebase Emulator connected — Firestore:8080 | Auth:9099');
+}
+
+// Enable offline persistence for faster subsequent loads (Production only)
+// تفعيل التخزين المؤقت المحلي لسرعة التحميل في المرات القادمة (في الإنتاج فقط)
+if (!ENV.useEmulator) {
+  enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+      // Multiple tabs open, persistence can only be enabled in one tab at a a time.
+      console.warn('Firebase persistence failed: Multiple tabs open');
+    } else if (err.code === 'unimplemented') {
+      // The current browser does not support all of the features required to enable persistence
+      console.warn('Firebase persistence not supported');
+    }
+  });
 }
 
 export default app;
