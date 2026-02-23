@@ -3,14 +3,19 @@
  * https://vitejs.dev/config/
  */
 
-import { defineConfig, loadEnv } from 'vite';
-import { resolve } from 'path';
-import { VitePWA } from 'vite-plugin-pwa';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 import legacy from '@vitejs/plugin-legacy';
+import { defineConfig, loadEnv } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
   // Load env file based on mode
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, __dirname, '');
 
   return {
     // Base public path
@@ -36,7 +41,7 @@ export default defineConfig(({ mode }) => {
 
     // Preview server (for testing production build)
     preview: {
-      port: 4000,
+      port: 4173, // Vite default — avoids conflict with Firebase Emulator UI (port 4000)
       host: true,
       open: true,
     },
@@ -61,9 +66,9 @@ export default defineConfig(({ mode }) => {
         },
         output: {
           // Manual chunks for better caching
+          // Note: firebase chunks will populate once main.js imports firebase services (Phase 9)
           manualChunks: {
             firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-            vendor: ['workbox-window'],
           },
           // Asset naming for cache busting
           assetFileNames: assetInfo => {
@@ -145,22 +150,13 @@ export default defineConfig(({ mode }) => {
                 },
               },
             },
-            {
-              urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'firebase-cache',
-                networkTimeoutSeconds: 10,
-              },
-            },
           ],
         },
       }),
 
-      // Legacy browser support (IE11, older browsers)
+      // Legacy browser support (modern browsers only, no IE 11)
       legacy({
         targets: ['defaults', 'not IE 11'],
-        additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       }),
     ],
 
@@ -202,5 +198,12 @@ export default defineConfig(({ mode }) => {
 
     // Clear screen on rebuild (dev mode)
     clearScreen: true,
+
+    // ─── Vitest Configuration ─────────────────────────────────────────────
+    test: {
+      globals: true, // no need to import describe/it/expect in test files
+      environment: 'node', // regex/pure-JS tests don't need a DOM
+      include: ['tests/**/*.test.js'],
+    },
   };
 });

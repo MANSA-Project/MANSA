@@ -1,2 +1,3 @@
 # MANSA
-An educational platform for collage students 
+
+An educational platform for collage students

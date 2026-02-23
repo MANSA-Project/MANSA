@@ -35,10 +35,15 @@ export const auth = getAuth(app);
 if (ENV.useEmulator) {
   // تأكد من تشغيل: firebase emulators:start
   // Make sure to run: firebase emulators:start
-  connectFirestoreEmulator(db, '127.0.0.1', 8080);
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
-
-  console.info('[MANSA] 🔧 Firebase Emulator connected — Firestore:8080 | Auth:9099');
+  const { host, firestorePort, authPort } = ENV.emulator;
+  connectFirestoreEmulator(db, host, firestorePort);
+  connectAuthEmulator(auth, `http://${host}:${authPort}`, { disableWarnings: true });
+  // TODO Phase 6: replace with Logger.info() once logger.js is created
+  if (ENV.isDev) {
+    console.info(
+      `[MANSA] 🔧 Firebase Emulator connected — Firestore:${firestorePort} | Auth:${authPort}`
+    );
+  }
 }
 
 // Enable offline persistence for faster subsequent loads (Production only)
