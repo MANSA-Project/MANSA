@@ -68,7 +68,7 @@ module.exports = {
   quoteProps: 'as-needed',
 
   // ─── حجم المسافة البادئة في HTML ─────────────────────────────────────────
-  htmlWhitespacesensitivity: 'css',
+  htmlWhitespaceSensitivity: 'css',
 
   // ─── إعدادات خاصة بأنواع الملفات | Per-file-type Overrides ──────────────
   overrides: [
