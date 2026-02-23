@@ -38,10 +38,12 @@ if (ENV.useEmulator) {
   const { host, firestorePort, authPort } = ENV.emulator;
   connectFirestoreEmulator(db, host, firestorePort);
   connectAuthEmulator(auth, `http://${host}:${authPort}`, { disableWarnings: true });
-
-  console.info(
-    `[MANSA] 🔧 Firebase Emulator connected — Firestore:${firestorePort} | Auth:${authPort}`
-  );
+  // TODO Phase 6: replace with Logger.info() once logger.js is created
+  if (ENV.isDev) {
+    console.info(
+      `[MANSA] 🔧 Firebase Emulator connected — Firestore:${firestorePort} | Auth:${authPort}`
+    );
+  }
 }
 
 export default app;
