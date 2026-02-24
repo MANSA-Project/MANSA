@@ -16,7 +16,11 @@
 
 import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence } from 'firebase/firestore';
+import {
+  getFirestore,
+  connectFirestoreEmulator,
+  enableIndexedDbPersistence,
+} from 'firebase/firestore';
 
 import { ENV } from './env.js';
 
@@ -49,7 +53,7 @@ if (ENV.useEmulator) {
 // Enable offline persistence for faster subsequent loads (Production only)
 // تفعيل التخزين المؤقت المحلي لسرعة التحميل في المرات القادمة (في الإنتاج فقط)
 if (!ENV.useEmulator) {
-  enableIndexedDbPersistence(db).catch((err) => {
+  enableIndexedDbPersistence(db).catch(err => {
     if (err.code === 'failed-precondition') {
       // Multiple tabs open, persistence can only be enabled in one tab at a a time.
       console.warn('Firebase persistence failed: Multiple tabs open');
