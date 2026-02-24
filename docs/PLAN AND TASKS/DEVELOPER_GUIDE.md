@@ -483,7 +483,7 @@ git commit -m "feat(router): add hash-based SPA routing with param extraction"
 # Fixing a bug
 git commit -m "fix(cache): resolve stale data after admin creates new faculty"
 
-# Updating dependencies
+  # Updating dependencies
 git commit -m "chore(deps): upgrade firebase sdk from v10.7.2 to v10.14.1"
 
 # Documentation update
