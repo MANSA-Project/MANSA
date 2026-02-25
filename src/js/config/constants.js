@@ -72,13 +72,13 @@ export const API_TIMEOUT = 30_000;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // التحدي والاختبار | Quiz / Challenge
+// ⚠️ القيم التالية غير محددة بعد — يجب اتخاذ القرار في V0.5 قبل بناء نظام التحدي
+// ⚠️ V0.5 TODO: values below are undecided — confirm in design before building the quiz engine
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** الوقت المسموح لكل جلسة تحدي (ثانية) | Time limit per challenge session (seconds) */
-export const QUIZ_TIME_LIMIT = 300; // 5 دقائق | 5 minutes
-
-/** عدد الأسئلة المختارة عشوائياً لكل تحدي | Questions randomly selected per challenge */
-export const QUESTIONS_PER_QUIZ = 10;
+// QUIZ_TIME_LIMIT — seconds per challenge session. Decide: 300 (5 min)? 600 (10 min)? per-subject?
+// QUESTIONS_PER_QUIZ — questions randomly selected per challenge. Decide: 10? 15? 20? dynamic?
+// → Define and export these in V0.5 once confirmed with the team.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // مفاتيح التخزين المحلي | localStorage Keys
@@ -111,9 +111,6 @@ export const REGEX = {
   /** تنسيق البريد الإلكتروني | Standard email format */
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 
-  /** أرقام الهاتف المصرية — 010، 011، 012، 015 | Egyptian mobile numbers */
-  PHONE: /^01[0125]\d{8}$/,
-
   /** رابط مطلق (http أو https) | Absolute URL */
   URL: /^https?:\/\/.+/,
 };
@@ -136,11 +133,23 @@ export const API_ENDPOINTS = {
 // نصوص عربية تُعرض للمستخدم — للتفاصيل الموسّعة راجع translations/ar.js
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const ERROR_MESSAGES = {
-  NETWORK: 'خطأ في الاتصال. تحقق من الإنترنت.',
-  AUTH_FAILED: 'فشل تسجيل الدخول. تحقق من بياناتك.',
-  INVALID_EMAIL: 'البريد الإلكتروني غير صحيح.',
-  FILE_TOO_LARGE: `حجم الملف يجب ألا يتجاوز ${MAX_FILE_SIZE / 1024 / 1024}MB`,
-  WEAK_PASSWORD: `كلمة المرور يجب أن تكون ${MIN_PASSWORD_LENGTH} أحرف على الأقل`,
-  GENERIC: 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.',
+// ─────────────────────────────────────────────────────────────────────────────
+// مفاتيح i18n للأخطاء | i18n Keys for Error Messages
+// هذه مفاتيح dot-notation لنظام الترجمة — ليست نصوصاً جاهزة للعرض
+// These are i18n dot-notation keys — NOT raw display strings
+//
+// ❌ خطأ: element.textContent = ERROR_KEYS.NETWORK
+// ✅ صحيح: element.textContent = t(ERROR_KEYS.NETWORK)
+//
+// Using keys here (instead of hardcoded Arabic) means errors are always
+// displayed in the user’s current language through the i18n system.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ERROR_KEYS = {
+  NETWORK: 'errors.network',
+  AUTH_FAILED: 'errors.auth',
+  INVALID_EMAIL: 'auth.loginError',
+  FILE_TOO_LARGE: 'errors.fileTooLarge',
+  WEAK_PASSWORD: 'auth.weakPassword',
+  GENERIC: 'errors.generic',
 };
