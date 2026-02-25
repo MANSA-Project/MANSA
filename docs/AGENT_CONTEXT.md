@@ -242,14 +242,14 @@ MANSA/
 ├── commitlint.config.cjs         ← allowed commit types/scopes
 ├── firebase.json                 ← Firebase Emulator ports (Firestore:8080 Auth:9099 — no Storage emulator)
 ├── package.json                  ← name:mansa, type:module, all scripts
+├── index.html                    ← SPA shell (Phase 9) — Vite entry point (project root)
 ├── vite.config.js                ← Vite build config, PWA plugin, import aliases
 ├── docs/
 │   ├── AGENT_CONTEXT.md          ← THIS FILE
 │   └── PLAN AND TASKS/
 │       ├── V0.1_Professional_Tasks_FINAL.md ← MASTER PLAN — read this for V0.1 tasks
 │       └── V0.5_Professional_Tasks.md       ← V0.5 plan reference
-├── public/
-│   └── index.html                ← empty now — to be filled in Phase 9
+├── public/                       ← static assets only (fonts, icons, images → copied as-is to dist/)
 └── src/
     ├── css/                      ← empty — to be filled Phase 10
     │   ├── base/                 ← reset.css, variables.css, typography.css, layout.css
@@ -267,9 +267,10 @@ MANSA/
         │   └── translations/
         │       ├── ar.js         ✅ full Arabic strings
         │       └── en.js         ✅ full English strings
-        ├── core/                 ← empty — Phase 7
+        ├── core/                 ← empty — Phase 6 + 7
+        │   ├── eventBus.js       ← to create Phase 6 Task 6.0 (component communication — Pub/Sub)
         │   ├── router.js         ← to create Phase 7 (hash-based SPA router)
-        │   └── state.js          ← to create Phase 6 (reactive state)
+        │   └── state.js          ← to create Phase 6 Task 6.1 (reactive state store)
         ├── features/             ← empty — V0.5
         ├── pages/                ← empty — Phase 11 (views per route)
         ├── services/             ← empty — Phase 8 (Firestore CRUD + azure-storage-service.js)
@@ -396,7 +397,7 @@ Never hardcode user-visible strings. All UI text goes through `t()`.
 Never use "magic numbers". Use `constants.js`:
 
 ```javascript
-import { MAX_FILE_SIZE, QUIZ_TIME_LIMIT } from '@config/constants.js';
+import { MAX_FILE_SIZE, POSTS_PER_PAGE } from '@config/constants.js';
 ```
 
 ---
@@ -438,7 +439,8 @@ npm run format:check # check only
 npm run build        # outputs to dist/
 
 # Tests
-npm run test         # run Vitest
+npm run test:run     # run once and exit (use this in CI and for quick checks)
+npm run test         # run in watch mode (use during active development)
 npm run test:ui      # Vitest with UI
 
 # Bundle analysis
@@ -452,7 +454,8 @@ npm run analyze
 | Check               | Status                                  |
 | ------------------- | --------------------------------------- |
 | `npm run lint`      | ✅ 0 errors                             |
-| `npm run build`     | ⚠️ Not tested yet (index.html is empty) |
+| `npm run test:run`  | ✅ 24/24 passed                         |
+| `npm run build`     | ✅ Passes — outputs to dist/index.html  |
 | Firebase connection | ✅ Configured (Emulator + real project) |
 | Emulator            | ✅ Configured and ready to start        |
 

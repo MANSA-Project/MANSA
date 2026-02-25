@@ -205,7 +205,8 @@ git push origin feature/your-task-name
 | `npm run build`                      | Build production bundle → outputs to `dist/` |
 | `npm run preview`                    | Preview the production build locally         |
 | `npm run test`                       | Run tests in watch mode (Vitest)             |
-| `npm run test -- --run`              | Run tests once and exit (for CI)             |
+| `npm run test:run`                   | Run tests once and exit — use for CI         |
+| `npm run test -- --run`              | Alias: same as `test:run`                    |
 | `npm run test -- --reporter=verbose` | Run tests with full output per test          |
 | `npm run test:ui`                    | Open Vitest visual UI in browser             |
 | `npm run test:coverage`              | Run tests with coverage report               |
@@ -380,7 +381,7 @@ chore(deps): upgrade firebase to v10.14.1
 ## Checklist
 
 - [ ] `npm run lint` passes (0 errors)
-- [ ] `npm run test -- --run` passes
+- [ ] `npm run test:run` passes
 - [ ] No `.env.*` files committed
 - [ ] No `console.log` left in code
 ```
@@ -555,8 +556,9 @@ MANSA/
 │       ├── V0.1_Execution_Tasks.md           ← detailed task list (Phases 6–17)
 │       └── V0.5_Professional_Tasks.md        ← V0.5 reference
 │
-├── 📁 public/
-│   ├── index.html              ← SPA shell (Phase 9)
+├── index.html                  ← SPA shell (Phase 9) — Vite entry point (project root)
+│
+├── 📁 public/                  ← static assets only (copied as-is to dist/)
 │   ├── manifest.json           ← PWA manifest (Phase 14)
 │   ├── offline.html            ← offline fallback (Phase 14)
 │   └── assets/
@@ -573,15 +575,16 @@ MANSA/
         │   ├── constants.js    ✅ all static constants (limits, regex, keys)
         │   ├── env.js          ✅ single source of all env vars — use ENV.* everywhere
         │   ├── firebase.js     ✅ Firebase init (db + auth only, no Storage)
-        │   ├── i18n.js         ← Phase 13: t() function, setLanguage()
+        │   ├── i18n.js         ← Phase 6 Task 6.6: t() function, setLanguage()
         │   ├── routes.js       ← Phase 7: all route registrations
         │   └── translations/
         │       ├── ar.js       ✅ Arabic strings
         │       └── en.js       ✅ English strings
         │
         ├── 📁 core/
+        │   ├── eventBus.js     ← Phase 6 Task 6.0: component communication (Pub/Sub)
         │   ├── router.js       ← Phase 7: hash router
-        │   └── state.js        ← Phase 6: reactive state
+        │   └── state.js        ← Phase 6 Task 6.1: reactive state store
         │
         ├── 📁 components/
         │   ├── navbar.js       ← Phase 12
