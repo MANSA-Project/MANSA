@@ -28,6 +28,16 @@ const app = initializeApp(ENV.firebase);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
+// ─── Vite HMR guard ──────────────────────────────────────────────────────────
+// connectFirestoreEmulator / connectAuthEmulator can only be called ONCE per
+// Firebase app instance. Vite's Hot Module Replacement re-evaluates this module
+// on every file save, which would throw:
+//   "Firestore has already been started and its settings can no longer be changed."
+// Opting out of HMR for this file prevents that crash in the dev server.
+if (import.meta.hot) {
+  import.meta.hot.decline();
+}
+
 // ─── Firebase Emulator (Development only) ────────────────────────────────────
 // يتصل بالـ Emulator المحلي عند التطوير بدلاً من Firebase الحقيقي
 // Connects to local emulator during development instead of real Firebase
