@@ -524,7 +524,7 @@ MANSA/
 ├── 📄 .env.development         ← ⚠️ gitignored — your local secrets
 ├── 📄 .env.example             ← committed template — copy to .env.development
 ├── 📄 .env.production          ← ⚠️ gitignored — production secrets
-├── 📄 .eslintrc.cjs            ← ESLint rules (no-console, prefer-const, etc.)
+├── 📄 eslint.config.js          ← ESLint flat config (rules, plugins, globals — uses `globals` pkg)
 ├── 📄 .gitattributes           ← line endings, binary file handling
 ├── 📄 .gitignore               ← what Git ignores
 ├── 📄 .nvmrc                   ← Node version: 24.13.1

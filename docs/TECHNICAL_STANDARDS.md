@@ -649,7 +649,7 @@ git push origin feature/my-feature
 
 ## 13. Tool Configuration Summary
 
-### ESLint (`.eslintrc.cjs`)
+### ESLint (`eslint.config.js` — flat config)
 
 - `no-unused-vars` → error
 - `no-console` → error (use `Logger` instead)
