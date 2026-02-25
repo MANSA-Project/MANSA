@@ -47,10 +47,65 @@ module.exports = {
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'], // النوع إلزامي
 
-    // ─── الـ scope ────────────────────────────────────────────────────────
+    // ─── النطاق (scope) | Commit Scope ────────────────────────────────────────
     // الـ scope اختياري لكن إذا وُجد يجب أن يكون lowercase
     'scope-case': [1, 'always', 'lower-case'],
     'scope-empty': [0], // الـ scope اختياري
+    // تحذير (ليس خطأ) إذا استُخدم نطاق غير مغطى — انظر DEVELOPER_GUIDE.md §5 للنطاقات المعتمدة
+    // Warning (not error) if scope is not in the recognised list
+    'scope-enum': [
+      1, // 1 = warning only — does not block the commit
+      'always',
+      [
+        // ─ Core infrastructure ─────────────────────────────────
+        'state',
+        'events',
+        'router',
+        'cache',
+        'storage',
+        'logger',
+        'validators',
+        'helpers',
+        'i18n',
+        // ─ Config ───────────────────────────────────────
+        'config',
+        'env',
+        'firebase',
+        'constants',
+        'pwa',
+        // ─ Features ────────────────────────────────────
+        'auth',
+        'universities',
+        'faculties',
+        'departments',
+        'subjects',
+        'quiz',
+        'leaderboard',
+        'profile',
+        'posts',
+        'ai',
+        'admin',
+        // ─ UI & Styling ────────────────────────────────
+        'ui',
+        'css',
+        'theme',
+        'navbar',
+        'breadcrumb',
+        'layout',
+        // ─ Infrastructure & Tooling ──────────────────────
+        'deps',
+        'ci',
+        'azure',
+        'security',
+        'build',
+        // ─ Documentation ──────────────────────────────
+        'readme',
+        'guide',
+        'standards',
+        'agent-context',
+        'plan',
+      ],
+    ],
 
     // ─── وصف الـ commit | Commit Subject ─────────────────────────────────
     'subject-empty': [2, 'never'], // الوصف إلزامي
