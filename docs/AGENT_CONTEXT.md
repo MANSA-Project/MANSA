@@ -225,7 +225,7 @@ MANSA/
 ├── .env.development              ← ⚠️ gitignored — real dev Firebase credentials
 ├── .env.example                  ← committed — template with all variables documented
 ├── .env.production               ← ⚠️ gitignored — real prod credentials (GitHub Secrets in CI)
-├── .eslintrc.cjs                 ← ESLint rules
+├── eslint.config.js              ← ESLint flat config (rules, plugins, globals — uses `globals` pkg)
 ├── .gitattributes                ← line endings, binary file handling
 ├── .gitignore                    ← ignores node_modules, dist, .env.* (not .env.example)
 ├── .github/
@@ -242,14 +242,14 @@ MANSA/
 ├── commitlint.config.cjs         ← allowed commit types/scopes
 ├── firebase.json                 ← Firebase Emulator ports (Firestore:8080 Auth:9099 — no Storage emulator)
 ├── package.json                  ← name:mansa, type:module, all scripts
+├── index.html                    ← SPA shell (Phase 9) — Vite entry point (project root)
 ├── vite.config.js                ← Vite build config, PWA plugin, import aliases
 ├── docs/
 │   ├── AGENT_CONTEXT.md          ← THIS FILE
 │   └── PLAN AND TASKS/
 │       ├── V0.1_Professional_Tasks_FINAL.md ← MASTER PLAN — read this for V0.1 tasks
 │       └── V0.5_Professional_Tasks.md       ← V0.5 plan reference
-├── public/
-│   └── index.html                ← empty now — to be filled in Phase 9
+├── public/                       ← static assets only (fonts, icons, images → copied as-is to dist/)
 └── src/
     ├── css/                      ← empty — to be filled Phase 10
     │   ├── base/                 ← reset.css, variables.css, typography.css, layout.css
@@ -262,14 +262,15 @@ MANSA/
         │   ├── constants.js      ✅ all app constants
         │   ├── env.js            ✅ single source of all env vars
         │   ├── firebase.js       ✅ Firebase init (Firestore + Auth only) + Emulator connect
-        │   ├── i18n.js           ← to create Phase 13 (the t() function)
+        │   ├── i18n.js           ← to create Phase 6 Task 6.6 (must exist before Phase 9)
         │   ├── routes.js         ← to create Phase 7
         │   └── translations/
         │       ├── ar.js         ✅ full Arabic strings
         │       └── en.js         ✅ full English strings
-        ├── core/                 ← empty — Phase 7
+        ├── core/                 ← empty — Phase 6 + 7
+        │   ├── eventBus.js       ← to create Phase 6 Task 6.0 (component communication — Pub/Sub)
         │   ├── router.js         ← to create Phase 7 (hash-based SPA router)
-        │   └── state.js          ← to create Phase 6 (reactive state)
+        │   └── state.js          ← to create Phase 6 Task 6.1 (reactive state store)
         ├── features/             ← empty — V0.5
         ├── pages/                ← empty — Phase 11 (views per route)
         ├── services/             ← empty — Phase 8 (Firestore CRUD + azure-storage-service.js)
@@ -396,7 +397,7 @@ Never hardcode user-visible strings. All UI text goes through `t()`.
 Never use "magic numbers". Use `constants.js`:
 
 ```javascript
-import { MAX_FILE_SIZE, QUIZ_TIME_LIMIT } from '@config/constants.js';
+import { MAX_FILE_SIZE, POSTS_PER_PAGE } from '@config/constants.js';
 ```
 
 ---
@@ -438,7 +439,8 @@ npm run format:check # check only
 npm run build        # outputs to dist/
 
 # Tests
-npm run test         # run Vitest
+npm run test:run     # run once and exit (use this in CI and for quick checks)
+npm run test         # run in watch mode (use during active development)
 npm run test:ui      # Vitest with UI
 
 # Bundle analysis
@@ -452,7 +454,8 @@ npm run analyze
 | Check               | Status                                  |
 | ------------------- | --------------------------------------- |
 | `npm run lint`      | ✅ 0 errors                             |
-| `npm run build`     | ⚠️ Not tested yet (index.html is empty) |
+| `npm run test:run`  | ✅ 24/24 passed                         |
+| `npm run build`     | ✅ Passes — outputs to dist/index.html  |
 | Firebase connection | ✅ Configured (Emulator + real project) |
 | Emulator            | ✅ Configured and ready to start        |
 
@@ -460,25 +463,25 @@ npm run analyze
 
 ## 15. Phase Progress
 
-| Phase | Description                                                         | Status                                   |
-| ----- | ------------------------------------------------------------------- | ---------------------------------------- |
-| 1     | Git setup                                                           | ✅ Complete                              |
-| 2     | Project structure + package.json                                    | ✅ Complete                              |
-| 3     | Dev tools (ESLint, Prettier, Husky)                                 | ✅ Complete                              |
-| 4     | Firebase setup + Emulator                                           | ✅ Complete                              |
-| 5     | Azure Blob Storage                                                  | ⏭️ Skipped to V0.5                       |
-| **6** | **Core JS utilities (state, storage, validators, helpers, logger)** | **⬅️ Next**                              |
-| 7     | Router system (router.js + routes.js)                               | ⬜                                       |
-| 8     | Services layer + cache.js                                           | ⬜                                       |
-| 9     | HTML shell + main.js entry point                                    | ⬜                                       |
-| 10    | CSS foundation (reset, variables, typography, layout)               | ⬜                                       |
-| 11    | Views (home, university, faculty, department, subject)              | ⬜                                       |
-| 12    | Navigation components (navbar, breadcrumb)                          | ⬜                                       |
-| 13    | i18n engine (i18n.js + apply t() in views)                          | 60% (translations done, i18n.js missing) |
-| 14    | PWA (manifest, service worker, icons)                               | ⬜                                       |
-| 15    | CI/CD (GitHub Actions + Azure deploy)                               | ⬜                                       |
-| 16    | Admin panel (dev-only CRUD)                                         | ⬜                                       |
-| 17    | Testing + Launch                                                    | ⬜                                       |
+| Phase | Description                                                                  | Status                              |
+| ----- | ---------------------------------------------------------------------------- | ----------------------------------- |
+| 1     | Git setup                                                                    | ✅ Complete                         |
+| 2     | Project structure + package.json                                             | ✅ Complete                         |
+| 3     | Dev tools (ESLint, Prettier, Husky)                                          | ✅ Complete                         |
+| 4     | Firebase setup + Emulator                                                    | ✅ Complete                         |
+| 5     | Azure Blob Storage                                                           | ⏭️ Skipped to V0.5                  |
+| **6** | **Core JS utilities (state, storage, validators, helpers, logger, i18n.js)** | **⬅️ Next**                         |
+| 7     | Router system (router.js + routes.js)                                        | ⬜                                  |
+| 8     | Services layer + cache.js                                                    | ⬜                                  |
+| 9     | HTML shell + main.js entry point                                             | ⬜                                  |
+| 10    | CSS foundation (reset, variables, typography, layout)                        | ⬜                                  |
+| 11    | Views (home, university, faculty, department, subject)                       | ⬜                                  |
+| 12    | Navigation components (navbar, breadcrumb)                                   | ⬜                                  |
+| 13    | Apply t() in all views and components                                        | ⬜ (i18n.js engine done in Phase 6) |
+| 14    | PWA (manifest, service worker, icons)                                        | ⬜                                  |
+| 15    | CI/CD (GitHub Actions + Azure deploy)                                        | ⬜                                  |
+| 16    | Admin panel (dev-only CRUD)                                                  | ⬜                                  |
+| 17    | Testing + Launch                                                             | ⬜                                  |
 
 ---
 

@@ -238,7 +238,7 @@ storybook-static/
 
 # Gatsby (if using Gatsby)
 .cache/
-public/
+# public/  ← INTENTIONALLY COMMENTED OUT — MANSA uses public/ as its static asset root
 
 # SvelteKit (if using SvelteKit)
 .svelte-kit/
@@ -252,3 +252,8 @@ public/
 !.gitattributes
 !.editorconfig
 !.nvmrc
+!public/
+!public/**
+# Never commit public/index.html — Vite's entry point is index.html at project root.
+# If public/index.html exists, it overwrites the processed dist/index.html at build time.
+public/index.html

@@ -205,7 +205,8 @@ git push origin feature/your-task-name
 | `npm run build`                      | Build production bundle → outputs to `dist/` |
 | `npm run preview`                    | Preview the production build locally         |
 | `npm run test`                       | Run tests in watch mode (Vitest)             |
-| `npm run test -- --run`              | Run tests once and exit (for CI)             |
+| `npm run test:run`                   | Run tests once and exit — use for CI         |
+| `npm run test -- --run`              | Alias: same as `test:run`                    |
 | `npm run test -- --reporter=verbose` | Run tests with full output per test          |
 | `npm run test:ui`                    | Open Vitest visual UI in browser             |
 | `npm run test:coverage`              | Run tests with coverage report               |
@@ -380,7 +381,7 @@ chore(deps): upgrade firebase to v10.14.1
 ## Checklist
 
 - [ ] `npm run lint` passes (0 errors)
-- [ ] `npm run test -- --run` passes
+- [ ] `npm run test:run` passes
 - [ ] No `.env.*` files committed
 - [ ] No `console.log` left in code
 ```
@@ -456,23 +457,78 @@ We use **Conventional Commits**. This is enforced automatically by Husky — bad
 
 ### Scopes
 
-Use these scopes consistently:
+Use these scopes consistently. Scope is optional but strongly recommended for any change inside a specific area.
 
-| Scope         | What it covers                     |
-| ------------- | ---------------------------------- |
-| `auth`        | Authentication flows               |
-| `router`      | SPA routing system                 |
-| `cache`       | Caching layer                      |
-| `db`          | Firestore / database               |
-| `ui`          | General UI, layout                 |
-| `i18n`        | Translations, language switching   |
-| `pwa`         | PWA, service worker, manifest      |
-| `admin`       | Admin panel                        |
-| `deps`        | Package dependencies               |
-| `ci`          | CI/CD pipelines                    |
-| `config`      | Config files (env, vite, firebase) |
-| `quiz`        | Quiz/challenge feature (V0.5+)     |
-| `leaderboard` | Leaderboard feature (V0.5+)        |
+**Core infrastructure**
+
+| Scope        | What it covers                        |
+| ------------ | ------------------------------------- |
+| `state`      | `state.js` — reactive state store     |
+| `events`     | `eventBus.js` — Pub/Sub communication |
+| `router`     | SPA routing system                    |
+| `cache`      | Caching layer (`cache.js`)            |
+| `storage`    | localStorage wrapper (`storage.js`)   |
+| `logger`     | Logging system (`logger.js`)          |
+| `validators` | Input validation (`validators.js`)    |
+| `helpers`    | General utilities (`helpers.js`)      |
+| `i18n`       | Translations, language switching      |
+
+**Config**
+
+| Scope       | What it covers                              |
+| ----------- | ------------------------------------------- |
+| `config`    | Config files in general (vite, eslint, etc) |
+| `env`       | Environment variables (`.env.*`, `env.js`)  |
+| `firebase`  | Firebase init, rules, emulator config       |
+| `constants` | `constants.js`                              |
+| `pwa`       | PWA, service worker, manifest               |
+
+**Features**
+
+| Scope          | What it covers                  |
+| -------------- | ------------------------------- |
+| `auth`         | Authentication flows            |
+| `universities` | Universities browsing + data    |
+| `faculties`    | Faculties                       |
+| `departments`  | Departments                     |
+| `subjects`     | Subjects + question bank        |
+| `quiz`         | Quiz / challenge engine (V0.5+) |
+| `leaderboard`  | Leaderboard (V0.5+)             |
+| `profile`      | User profile (V0.5+)            |
+| `posts`        | Community posts (V0.5+)         |
+| `ai`           | AI assistant (V1.0+)            |
+| `admin`        | Admin panel                     |
+
+**UI & Styling**
+
+| Scope        | What it covers                    |
+| ------------ | --------------------------------- |
+| `ui`         | General UI, layout, shared styles |
+| `css`        | CSS files                         |
+| `theme`      | Theme system, CSS variables       |
+| `navbar`     | Navbar component                  |
+| `breadcrumb` | Breadcrumb component              |
+| `layout`     | Page layout structure             |
+
+**Infrastructure & Tooling**
+
+| Scope      | What it covers                        |
+| ---------- | ------------------------------------- |
+| `deps`     | Package dependencies (`package.json`) |
+| `ci`       | CI/CD pipelines (GitHub Actions)      |
+| `azure`    | Azure Blob Storage, CDN, Static Apps  |
+| `security` | Firestore rules, security fixes       |
+| `build`    | Vite build config                     |
+
+**Documentation**
+
+| Scope           | What it covers           |
+| --------------- | ------------------------ |
+| `readme`        | `README.md`              |
+| `guide`         | `DEVELOPER_GUIDE.md`     |
+| `standards`     | `TECHNICAL_STANDARDS.md` |
+| `agent-context` | `AGENT_CONTEXT.md`       |
+| `plan`          | Task planning docs       |
 
 ### Full Examples
 
@@ -483,11 +539,14 @@ git commit -m "feat(router): add hash-based SPA routing with param extraction"
 # Fixing a bug
 git commit -m "fix(cache): resolve stale data after admin creates new faculty"
 
-# Updating dependencies
+  # Updating dependencies
 git commit -m "chore(deps): upgrade firebase sdk from v10.7.2 to v10.14.1"
 
 # Documentation update
 git commit -m "docs(agent-context): add Azure storage decision to tech stack table"
+
+# Security rules update
+git commit -m "fix(security): block direct score writes from client in firestore.rules"
 
 # Refactor (same behavior, cleaner code)
 git commit -m "refactor(state): replace manual listener array with Map for O(1) lookup"
@@ -524,7 +583,7 @@ MANSA/
 ├── 📄 .env.development         ← ⚠️ gitignored — your local secrets
 ├── 📄 .env.example             ← committed template — copy to .env.development
 ├── 📄 .env.production          ← ⚠️ gitignored — production secrets
-├── 📄 .eslintrc.cjs            ← ESLint rules (no-console, prefer-const, etc.)
+├── 📄 eslint.config.js          ← ESLint flat config (rules, plugins, globals — uses `globals` pkg)
 ├── 📄 .gitattributes           ← line endings, binary file handling
 ├── 📄 .gitignore               ← what Git ignores
 ├── 📄 .nvmrc                   ← Node version: 24.13.1
@@ -555,8 +614,9 @@ MANSA/
 │       ├── V0.1_Execution_Tasks.md           ← detailed task list (Phases 6–17)
 │       └── V0.5_Professional_Tasks.md        ← V0.5 reference
 │
-├── 📁 public/
-│   ├── index.html              ← SPA shell (Phase 9)
+├── index.html                  ← SPA shell (Phase 9) — Vite entry point (project root)
+│
+├── 📁 public/                  ← static assets only (copied as-is to dist/)
 │   ├── manifest.json           ← PWA manifest (Phase 14)
 │   ├── offline.html            ← offline fallback (Phase 14)
 │   └── assets/
@@ -573,15 +633,16 @@ MANSA/
         │   ├── constants.js    ✅ all static constants (limits, regex, keys)
         │   ├── env.js          ✅ single source of all env vars — use ENV.* everywhere
         │   ├── firebase.js     ✅ Firebase init (db + auth only, no Storage)
-        │   ├── i18n.js         ← Phase 13: t() function, setLanguage()
+        │   ├── i18n.js         ← Phase 6 Task 6.6: t() function, setLanguage()
         │   ├── routes.js       ← Phase 7: all route registrations
         │   └── translations/
         │       ├── ar.js       ✅ Arabic strings
         │       └── en.js       ✅ English strings
         │
         ├── 📁 core/
+        │   ├── eventBus.js     ← Phase 6 Task 6.0: component communication (Pub/Sub)
         │   ├── router.js       ← Phase 7: hash router
-        │   └── state.js        ← Phase 6: reactive state
+        │   └── state.js        ← Phase 6 Task 6.1: reactive state store
         │
         ├── 📁 components/
         │   ├── navbar.js       ← Phase 12

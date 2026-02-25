@@ -295,7 +295,155 @@ unsubscribe();
 
 ---
 
-## 8. i18n (Translations) Usage
+## 8. Component Communication — EventBus
+
+> **This is an architectural law, not a suggestion.**
+> It applies to every component, page, and feature written from Phase 9 onward.
+
+### The problem it solves
+
+Without a communication pattern, modules talk directly to each other:
+
+```js
+// ❌ quiz.js talking directly to 3 other modules — spaghetti
+function onQuizFinished(score) {
+  navbar.updatePoints(score); // quiz knows about navbar
+  leaderboard.refresh(); // quiz knows about leaderboard
+  notifications.show('done'); // quiz knows about notifications
+}
+```
+
+When you have 10+ modules, every file is tangled with every other. Changing one thing breaks something somewhere else.
+
+### The rule
+
+**Feature modules, components, and pages must NEVER import each other directly.**
+
+The only cross-layer imports allowed:
+
+```
+✅ ALLOWED — any module may import the infrastructure layer:
+  Any module  →  @config/*       (constants, env, firebase, i18n)
+  Any module  →  @utils/*        (helpers, logger, storage, validators)
+  Any module  →  @js/core/*      (state, eventBus, router)
+
+❌ FORBIDDEN — application layers must not know about each other:
+  @features/* →  @features/*     feature importing another feature
+  @pages/*    →  @components/*   page hardcoding a component import
+  @components →  @features/*     component importing a feature
+```
+
+Instead of direct imports, modules **emit events** and **subscribe** to events they care about.
+
+### The EventBus API
+
+```js
+import { EventBus } from '@js/core/eventBus.js';
+import { EVENTS } from '@config/constants.js';
+
+// Publish — "this just happened, here is the data"
+EventBus.emit(EVENTS.QUIZ.FINISHED, { score: 95, userId: 'abc', challengeId: '5' });
+
+// Subscribe — "notify me when this happens" — returns an unsubscribe function
+const unsubscribe = EventBus.on(EVENTS.QUIZ.FINISHED, ({ score }) => {
+  updateNavbarPoints(score);
+});
+
+// Unsubscribe — MUST be called in destroy() — see lifecycle section below
+unsubscribe();
+```
+
+Same quiz example done correctly:
+
+```js
+// quiz.js — emits one event and is done. No knowledge of any other module.
+function onQuizFinished(score) {
+  EventBus.emit(EVENTS.QUIZ.FINISHED, { score, userId: currentUser.uid });
+}
+
+// navbar.js — subscribes independently, quiz.js doesn't know it exists
+EventBus.on(EVENTS.QUIZ.FINISHED, ({ score }) => updatePoints(score));
+
+// leaderboard.js — subscribes independently
+EventBus.on(EVENTS.QUIZ.FINISHED, ({ userId }) => refresh(userId));
+```
+
+Adding a new `analytics.js` that also reacts to quiz results requires **zero changes to quiz.js**.
+
+### Event naming convention — always use `EVENTS` constants
+
+All event names are defined in `EVENTS` inside `constants.js`. **Never use raw strings.**
+
+```js
+// ✅ Always use the constant — typos are caught at import time
+EventBus.emit(EVENTS.QUIZ.FINISHED, data);
+EventBus.on(EVENTS.AUTH.LOGOUT, handler);
+
+// ❌ Never inline event name strings — typos are silent, no error is thrown
+EventBus.on('auth:logut', handler); // typo — handler never fires, no warning
+```
+
+**EVENTS registry in `constants.js` — add entries as each phase is built:**
+
+```js
+export const EVENTS = {
+  AUTH: {
+    LOGIN: 'auth:login',
+    LOGOUT: 'auth:logout',
+  },
+  QUIZ: {
+    STARTED: 'quiz:started',
+    FINISHED: 'quiz:finished',
+    TIMEOUT: 'quiz:timeout',
+  },
+  LEADERBOARD: {
+    UPDATE: 'leaderboard:update',
+  },
+  UI: {
+    LOADING_START: 'ui:loading:start',
+    LOADING_STOP: 'ui:loading:stop',
+    LANG_CHANGED: 'ui:lang:changed',
+  },
+};
+```
+
+### Component lifecycle contract
+
+Every component and page view **must** export `init()` and `destroy()`.
+
+```js
+// src/js/components/example.js
+
+let _unsubscribers = []; // collect every EventBus.on() return value here
+
+export function init() {
+  // 1. Render DOM
+  // 2. Subscribe to events
+  _unsubscribers.push(EventBus.on(EVENTS.AUTH.LOGIN, onLogin), EventBus.on(EVENTS.UI.LANG_CHANGED, rerender));
+}
+
+export function destroy() {
+  // ⚠️ MANDATORY — the router calls this before rendering the next view.
+  // Without it, old handlers keep firing after navigation = memory leaks + double-fire bugs.
+  _unsubscribers.forEach(fn => fn());
+  _unsubscribers = [];
+}
+```
+
+The router (Phase 7) is responsible for calling `destroy()` on the current view before navigating.
+
+### State vs EventBus — which one to use?
+
+| Use `state.js` for...                             | Use `eventBus.js` for...                        |
+| ------------------------------------------------- | ----------------------------------------------- |
+| Persistent data that any module needs to **read** | One-time **actions** or notifications           |
+| `currentUser`, `language`, `isLoading`            | `quiz:finished`, `auth:logout`, `file:uploaded` |
+| "What **is** the current value?"                  | "This just **happened**"                        |
+| Data that survives between page navigations       | Events that fire once and are done              |
+
+---
+
+## 9. i18n (Translations) Usage
 
 All user-visible text must go through `t()`. No exceptions.
 
@@ -343,7 +491,7 @@ document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
 ---
 
-## 9. CSS Architecture
+## 10. CSS Architecture
 
 ### Structure
 
@@ -461,7 +609,7 @@ src/css/
 
 ---
 
-## 10. HTML Writing Standards
+## 11. HTML Writing Standards
 
 ```html
 <!-- ✅ Use semantic HTML -->
@@ -501,7 +649,7 @@ src/css/
 
 ---
 
-## 11. View Rendering Pattern
+## 12. View Rendering Pattern
 
 Every view follows this exact pattern:
 
@@ -582,7 +730,7 @@ function attachEventListeners(container, data) {
 
 ---
 
-## 12. Git Workflow
+## 13. Git Workflow
 
 ### Branches
 
@@ -647,9 +795,9 @@ git push origin feature/my-feature
 
 ---
 
-## 13. Tool Configuration Summary
+## 14. Tool Configuration Summary
 
-### ESLint (`.eslintrc.cjs`)
+### ESLint (`eslint.config.js` — flat config)
 
 - `no-unused-vars` → error
 - `no-console` → error (use `Logger` instead)
@@ -689,7 +837,7 @@ Already covered in Section 2.
 
 ---
 
-## 14. Logging Standards
+## 15. Logging Standards
 
 ```javascript
 import { Logger } from '@utils/logger.js';
@@ -718,7 +866,7 @@ Logger.error('Firebase read failed', { collection: 'universities', error });
 
 ---
 
-## 15. Performance Rules
+## 16. Performance Rules
 
 ### Firebase quota protection
 
@@ -748,7 +896,7 @@ Logger.error('Firebase read failed', { collection: 'universities', error });
 
 ---
 
-## 16. Security Rules
+## 17. Security Rules
 
 ### Never do these:
 
@@ -775,7 +923,7 @@ localStorage.setItem('password', userPassword); // never
 
 ---
 
-## 17. Accessibility Standards
+## 18. Accessibility Standards
 
 Every UI component must meet these minimums:
 
@@ -805,7 +953,7 @@ Every UI component must meet these minimums:
 
 ---
 
-## 18. V0.5 Considerations While Writing V0.1
+## 19. V0.5 Considerations While Writing V0.1
 
 Even in V0.1, write code that won't require a full rewrite for V0.5. Specifically:
 
@@ -856,7 +1004,7 @@ function renderLeaderboard(entries, currentUserId = null) {
 
 ---
 
-## 19. Future Versions — What's Coming
+## 20. Future Versions — What's Coming
 
 ### V0.5 (Beta) — will require additions to:
 
@@ -882,7 +1030,7 @@ function renderLeaderboard(entries, currentUserId = null) {
 
 ---
 
-## 20. Dev Environment Setup Checklist
+## 21. Dev Environment Setup Checklist
 
 For any new developer or agent to get started:
 
