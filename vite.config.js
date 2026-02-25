@@ -60,9 +60,9 @@ export default defineConfig(({ mode }) => {
         input: {
           // ─── SPA Entry Point ──────────────────────────────────────────────
           // Single entry for now (SPA handles routing internally via hash router)
-          // TODO Phase 9: main entry is public/index.html
+          // TODO Phase 9: main entry is index.html
           // TODO Phase 16: add admin: resolve(__dirname, 'public/admin.html') when created
-          main: resolve(__dirname, 'public/index.html'),
+          main: resolve(__dirname, 'index.html'),
         },
         output: {
           // Manual chunks for better caching
@@ -140,9 +140,23 @@ export default defineConfig(({ mode }) => {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
               handler: 'CacheFirst',
               options: {
-                cacheName: 'google-fonts-cache',
+                cacheName: 'google-fonts-stylesheets',
                 expiration: {
                   maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-webfonts',
+                expiration: {
+                  maxEntries: 30,
                   maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
                 },
                 cacheableResponse: {
