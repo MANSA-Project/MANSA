@@ -457,23 +457,78 @@ We use **Conventional Commits**. This is enforced automatically by Husky — bad
 
 ### Scopes
 
-Use these scopes consistently:
+Use these scopes consistently. Scope is optional but strongly recommended for any change inside a specific area.
 
-| Scope         | What it covers                     |
-| ------------- | ---------------------------------- |
-| `auth`        | Authentication flows               |
-| `router`      | SPA routing system                 |
-| `cache`       | Caching layer                      |
-| `db`          | Firestore / database               |
-| `ui`          | General UI, layout                 |
-| `i18n`        | Translations, language switching   |
-| `pwa`         | PWA, service worker, manifest      |
-| `admin`       | Admin panel                        |
-| `deps`        | Package dependencies               |
-| `ci`          | CI/CD pipelines                    |
-| `config`      | Config files (env, vite, firebase) |
-| `quiz`        | Quiz/challenge feature (V0.5+)     |
-| `leaderboard` | Leaderboard feature (V0.5+)        |
+**Core infrastructure**
+
+| Scope        | What it covers                        |
+| ------------ | ------------------------------------- |
+| `state`      | `state.js` — reactive state store     |
+| `events`     | `eventBus.js` — Pub/Sub communication |
+| `router`     | SPA routing system                    |
+| `cache`      | Caching layer (`cache.js`)            |
+| `storage`    | localStorage wrapper (`storage.js`)   |
+| `logger`     | Logging system (`logger.js`)          |
+| `validators` | Input validation (`validators.js`)    |
+| `helpers`    | General utilities (`helpers.js`)      |
+| `i18n`       | Translations, language switching      |
+
+**Config**
+
+| Scope       | What it covers                              |
+| ----------- | ------------------------------------------- |
+| `config`    | Config files in general (vite, eslint, etc) |
+| `env`       | Environment variables (`.env.*`, `env.js`)  |
+| `firebase`  | Firebase init, rules, emulator config       |
+| `constants` | `constants.js`                              |
+| `pwa`       | PWA, service worker, manifest               |
+
+**Features**
+
+| Scope          | What it covers                  |
+| -------------- | ------------------------------- |
+| `auth`         | Authentication flows            |
+| `universities` | Universities browsing + data    |
+| `faculties`    | Faculties                       |
+| `departments`  | Departments                     |
+| `subjects`     | Subjects + question bank        |
+| `quiz`         | Quiz / challenge engine (V0.5+) |
+| `leaderboard`  | Leaderboard (V0.5+)             |
+| `profile`      | User profile (V0.5+)            |
+| `posts`        | Community posts (V0.5+)         |
+| `ai`           | AI assistant (V1.0+)            |
+| `admin`        | Admin panel                     |
+
+**UI & Styling**
+
+| Scope        | What it covers                    |
+| ------------ | --------------------------------- |
+| `ui`         | General UI, layout, shared styles |
+| `css`        | CSS files                         |
+| `theme`      | Theme system, CSS variables       |
+| `navbar`     | Navbar component                  |
+| `breadcrumb` | Breadcrumb component              |
+| `layout`     | Page layout structure             |
+
+**Infrastructure & Tooling**
+
+| Scope      | What it covers                        |
+| ---------- | ------------------------------------- |
+| `deps`     | Package dependencies (`package.json`) |
+| `ci`       | CI/CD pipelines (GitHub Actions)      |
+| `azure`    | Azure Blob Storage, CDN, Static Apps  |
+| `security` | Firestore rules, security fixes       |
+| `build`    | Vite build config                     |
+
+**Documentation**
+
+| Scope           | What it covers           |
+| --------------- | ------------------------ |
+| `readme`        | `README.md`              |
+| `guide`         | `DEVELOPER_GUIDE.md`     |
+| `standards`     | `TECHNICAL_STANDARDS.md` |
+| `agent-context` | `AGENT_CONTEXT.md`       |
+| `plan`          | Task planning docs       |
 
 ### Full Examples
 
@@ -489,6 +544,9 @@ git commit -m "chore(deps): upgrade firebase sdk from v10.7.2 to v10.14.1"
 
 # Documentation update
 git commit -m "docs(agent-context): add Azure storage decision to tech stack table"
+
+# Security rules update
+git commit -m "fix(security): block direct score writes from client in firestore.rules"
 
 # Refactor (same behavior, cleaner code)
 git commit -m "refactor(state): replace manual listener array with Map for O(1) lookup"
