@@ -14,19 +14,22 @@ import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
-  // Load env file based on mode
+  // Load env file based on mode — reads .env.* from __dirname (project root)
   const env = loadEnv(mode, __dirname, '');
 
   return {
-    // ─── Project root (where index.html lives) ────────────────────────────────
-    // Setting root to 'public/' means Vite finds index.html at the correct location
-    // AND outputs to dist/index.html instead of dist/public/index.html.
-    // All src/ imports still work because aliases use absolute resolve() paths.
-    root: resolve(__dirname, 'public'),
+    // ─── No custom root ──────────────────────────────────────────────────────
+    // Vite default is process.cwd() — index.html lives at the project root
+    // (next to vite.config.js). This is the standard Vite pattern.
+    // Build output: dist/index.html — correct, no workarounds needed.
 
-    // Static assets that bypass Vite processing (robots.txt, offline.html, etc.)
-    // Set false for now — no files here yet. Enable + point to a dir in Phase 14 (PWA).
-    publicDir: false,
+    // ─── Static assets directory ──────────────────────────────────────────
+    // Files here are served as-is and copied directly to dist/.
+    // public/assets/icons/  →  dist/assets/icons/  (PWA icons — Phase 14)
+    // public/assets/fonts/  →  dist/assets/fonts/
+    // public/assets/images/ →  dist/assets/images/
+    // DO NOT put index.html here — it must stay at the project root.
+    publicDir: resolve(__dirname, 'public'),
 
     // Base public path
     base: '/',
@@ -39,14 +42,11 @@ export default defineConfig(({ mode }) => {
       cors: true,
       strictPort: false, // Try next port if 3000 is taken
 
-      // Proxy API requests (if needed)
-      proxy: {
-        '/api': {
-          target: env.VITE_API_URL || 'http://localhost:5000',
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/api/, ''),
-        },
-      },
+      // Proxy API requests
+      // ⚠️  MANSA has no backend server — there is no API to proxy.
+      // This block is intentionally empty. Do not add proxy rules here unless
+      // a server-side function endpoint is introduced (V1.0+ AI proxy).
+      proxy: {},
     },
 
     // Preview server (for testing production build)
@@ -58,9 +58,7 @@ export default defineConfig(({ mode }) => {
 
     // Build configuration
     build: {
-      // Absolute path needed because root is 'public/' — relative 'dist' would
-      // resolve to public/dist/ instead of the project root dist/.
-      outDir: resolve(__dirname, 'dist'),
+      outDir: 'dist', // default — resolves relative to project root (correct)
       assetsDir: 'assets',
       emptyOutDir: true,
 
@@ -71,10 +69,10 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           // ─── SPA Entry Point ──────────────────────────────────────────────
-          // Single entry for now (SPA handles routing internally via hash router)
-          // TODO Phase 9: main entry is public/index.html
+          // index.html is at the project root — standard Vite location.
+          // Phase 9: fill in index.html with <script type="module" src="/src/js/main.js">
           // TODO Phase 16: add admin: resolve(__dirname, 'public/admin.html') when created
-          main: resolve(__dirname, 'public/index.html'),
+          main: resolve(__dirname, 'index.html'),
         },
         output: {
           // Manual chunks for better caching
@@ -97,24 +95,10 @@ export default defineConfig(({ mode }) => {
         },
       },
 
-      // Minification
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          // ⚠️  Never use drop_console: true — it removes ALL console calls including
-          // console.warn and console.error which are the intentionally allowed methods
-          // for production error reporting (see ESLint no-console rule).
-          // Instead, strip only development-only methods via pure_funcs.
-          drop_console: false,
-          drop_debugger: true,
-          // console.warn and console.error are preserved intentionally.
-          // console.log / console.debug / console.info are development-only.
-          pure_funcs: mode === 'production' ? ['console.log', 'console.debug', 'console.info'] : [],
-        },
-        format: {
-          comments: false, // Remove comments
-        },
-      },
+      // Minification — esbuild (Vite default, ~20x faster than terser)
+      // esbuild handles console stripping via the top-level `esbuild` option below.
+      // No extra dependency needed.
+      minify: mode === 'production' ? 'esbuild' : false,
 
       // Chunk size warning limit (KB)
       chunkSizeWarningLimit: 1000,
@@ -126,29 +110,41 @@ export default defineConfig(({ mode }) => {
       assetsInlineLimit: 4096, // 4KB
     },
 
+    // esbuild transform options (applies to both transpilation and minification)
+    esbuild: {
+      // Remove all comments from production bundles
+      legalComments: mode === 'production' ? 'none' : 'inline',
+
+      // Remove debugger statements in production
+      drop: mode === 'production' ? ['debugger'] : [],
+
+      // Mark dev-only console methods as pure so esbuild tree-shakes them.
+      // ⚠️  console.warn and console.error are intentionally NOT listed here —
+      //     they are the only console methods allowed by our ESLint config
+      //     and are needed for runtime error reporting in production.
+      pure: mode === 'production' ? ['console.log', 'console.debug', 'console.info'] : [],
+    },
+
     // Plugins
     plugins: [
       // PWA Plugin
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+        // ⚠️  Phase 14: populate includeAssets once favicon.ico, robots.txt,
+        // and apple-touch-icon.png exist in a static assets dir.
+        // With publicDir: false these files are never copied to dist/,
+        // so listing them here would make the service worker try to precache
+        // URLs that return 404, causing SW installation to fail.
+        includeAssets: [],
         manifest: {
           name: 'MANSA - منصة تعليمية',
           short_name: 'MANSA',
           description: 'منصة تعليمية تفاعلية لطلاب الجامعة',
           theme_color: '#667eea',
-          icons: [
-            {
-              src: 'assets/icons/icon-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-            },
-            {
-              src: 'assets/icons/icon-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-            },
-          ],
+          // ⚠️  Phase 14: create the actual icon files and restore these entries.
+          // The paths below are correct but the files don't exist yet.
+          // An empty icons array prevents SW install failures in the meantime.
+          icons: [],
         },
         workbox: {
           // Service Worker options
@@ -219,10 +215,6 @@ export default defineConfig(({ mode }) => {
 
     // ─── Vitest Configuration ─────────────────────────────────────────────
     test: {
-      // Explicit root keeps tests anchored to the project root, not the Vite
-      // root (public/). Without this, 'tests/**/*.test.js' would resolve to
-      // 'public/tests/**/*.test.js' which doesn't exist.
-      root: __dirname,
       globals: true, // no need to import describe/it/expect in test files
       environment: 'node', // regex/pure-JS tests don't need a DOM
       include: ['tests/**/*.test.js'],

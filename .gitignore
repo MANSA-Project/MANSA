@@ -254,3 +254,6 @@ storybook-static/
 !.nvmrc
 !public/
 !public/**
+# Never commit public/index.html — Vite's entry point is index.html at project root.
+# If public/index.html exists, it overwrites the processed dist/index.html at build time.
+public/index.html
