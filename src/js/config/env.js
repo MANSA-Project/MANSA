@@ -33,6 +33,15 @@ export const ENV = {
 
   // ─── Azure Blob Storage ──────────────────────────────────────────────────
   // Get from: Azure Portal → Storage Account → Shared Access Signature
+  //
+  // ⚠️  SECURITY WARNING — VITE_AZURE_SAS_TOKEN is a VITE_ variable.
+  // It is inlined into the JS bundle at build time — anyone with DevTools can read it.
+  // A leaked SAS token grants direct read/write access to your Azure Blob container.
+  //
+  // V0.5 fix: Azure uploads must go through a Firebase Cloud Function (server-side proxy).
+  // The Cloud Function generates a short-lived SAS per authenticated request.
+  // Until that proxy exists: use a read-only, narrow-scope SAS with a short expiry,
+  // and NEVER put a write-capable or long-lived SAS token here in production.
   azure: {
     storageAccount: import.meta.env.VITE_AZURE_STORAGE_ACCOUNT,
     containerName: import.meta.env.VITE_AZURE_CONTAINER || 'mansa-public',
@@ -58,9 +67,9 @@ export const ENV = {
   },
 
   // ─── روابط التطبيق | App URLs ────────────────────────────────────────────
+  // CDN URL is under ENV.azure.cdnUrl — use that instead of this field
   appUrl: import.meta.env.VITE_APP_URL,
   apiUrl: import.meta.env.VITE_API_URL,
-  cdnUrl: import.meta.env.VITE_CDN_URL,
 
   // ─── Firebase Emulator | للتطوير المحلي فقط ──────────────────────────────
   // true → يتصل بـ Firebase Emulator بدلاً من Firebase الحقيقي
@@ -94,6 +103,18 @@ export const ENV = {
 // Fail fast if critical environment variables are missing in production
 // ─────────────────────────────────────────────────────────────────────────────
 if (ENV.isProd) {
+  // ─── Guard: emulator must never run in production ────────────────────────────
+  // A misconfigured CI build with VITE_USE_EMULATOR=true would silently route
+  // all production traffic to a local emulator that isn’t running — every
+  // Firestore read/write would fail with no obvious error.
+  if (ENV.useEmulator) {
+    throw new Error(
+      '[MANSA] ❌ VITE_USE_EMULATOR=true detected in a production build.\n' +
+        'This must always be false in production.\n' +
+        'Set VITE_USE_EMULATOR=false in your .env.production and GitHub Secrets.'
+    );
+  }
+
   const REQUIRED = [
     ['VITE_FIREBASE_API_KEY', ENV.firebase.apiKey],
     ['VITE_FIREBASE_AUTH_DOMAIN', ENV.firebase.authDomain],
