@@ -238,7 +238,7 @@ storybook-static/
 
 # Gatsby (if using Gatsby)
 .cache/
-public/
+# public/  ← INTENTIONALLY COMMENTED OUT — MANSA uses public/ as its static asset root
 
 # SvelteKit (if using SvelteKit)
 .svelte-kit/
@@ -252,3 +252,5 @@ public/
 !.gitattributes
 !.editorconfig
 !.nvmrc
+!public/
+!public/**

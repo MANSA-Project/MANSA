@@ -18,6 +18,16 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname, '');
 
   return {
+    // ─── Project root (where index.html lives) ────────────────────────────────
+    // Setting root to 'public/' means Vite finds index.html at the correct location
+    // AND outputs to dist/index.html instead of dist/public/index.html.
+    // All src/ imports still work because aliases use absolute resolve() paths.
+    root: resolve(__dirname, 'public'),
+
+    // Static assets that bypass Vite processing (robots.txt, offline.html, etc.)
+    // Set false for now — no files here yet. Enable + point to a dir in Phase 14 (PWA).
+    publicDir: false,
+
     // Base public path
     base: '/',
 
@@ -48,7 +58,9 @@ export default defineConfig(({ mode }) => {
 
     // Build configuration
     build: {
-      outDir: 'dist',
+      // Absolute path needed because root is 'public/' — relative 'dist' would
+      // resolve to public/dist/ instead of the project root dist/.
+      outDir: resolve(__dirname, 'dist'),
       assetsDir: 'assets',
       emptyOutDir: true,
 
@@ -89,9 +101,15 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: mode === 'production', // Remove console.log in production
+          // ⚠️  Never use drop_console: true — it removes ALL console calls including
+          // console.warn and console.error which are the intentionally allowed methods
+          // for production error reporting (see ESLint no-console rule).
+          // Instead, strip only development-only methods via pure_funcs.
+          drop_console: false,
           drop_debugger: true,
-          pure_funcs: mode === 'production' ? ['console.log', 'console.info'] : [],
+          // console.warn and console.error are preserved intentionally.
+          // console.log / console.debug / console.info are development-only.
+          pure_funcs: mode === 'production' ? ['console.log', 'console.debug', 'console.info'] : [],
         },
         format: {
           comments: false, // Remove comments
@@ -201,6 +219,10 @@ export default defineConfig(({ mode }) => {
 
     // ─── Vitest Configuration ─────────────────────────────────────────────
     test: {
+      // Explicit root keeps tests anchored to the project root, not the Vite
+      // root (public/). Without this, 'tests/**/*.test.js' would resolve to
+      // 'public/tests/**/*.test.js' which doesn't exist.
+      root: __dirname,
       globals: true, // no need to import describe/it/expect in test files
       environment: 'node', // regex/pure-JS tests don't need a DOM
       include: ['tests/**/*.test.js'],
